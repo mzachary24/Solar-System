@@ -6,6 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# TODO - Fetch ImGui
+
+# TODO - Find package openGL
+
 # Executable
 add_executable(${PROJECT_NAME} "src/SolarSystem.cpp")
 
