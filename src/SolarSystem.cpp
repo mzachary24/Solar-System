@@ -1,5 +1,6 @@
 #include "SolarSystem.h"
 
+#include <cmath>
 #include <vector>
 
 #include "CelestialBody.h"
