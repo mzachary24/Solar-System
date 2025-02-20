@@ -9,3 +9,11 @@ Solar-Sytem is a GitHub collaboration demo
 - Prefer smaller, focused commits
 - Submit a pull request when finished
 - Pull request will be reviewed and merged into the main branch via a squash
+
+## Build
+
+- Make a build directory and invoke `cmake` upon the root project directory
+  - `mkdir build`
+  - `cd build`
+  - `cmake ..`
+  - `make`
