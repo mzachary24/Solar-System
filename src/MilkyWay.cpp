@@ -120,6 +120,7 @@ std::vector<CelestialBody> getMilkyWay()
 
   CelestialBody Jupiter
   (
+    "Jupiter",
     1898.13 * pow(10, 24),
     143128 * pow(10, 10),
     69911,
