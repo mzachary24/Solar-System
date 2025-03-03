@@ -52,6 +52,7 @@ std::vector<CelestialBody> getMilkyWay()
 
   CelestialBody Mercury
   (
+    "Mercury",
     0.3301 * pow(10, 24),
     6.083 * pow(10, 10),
     2439.7,
