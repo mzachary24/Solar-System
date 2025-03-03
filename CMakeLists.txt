@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Add Raylib using FetchContent
+# Fetch raylib using
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
@@ -34,4 +34,6 @@ add_subdirectory(include)
 add_subdirectory(src)
 target_link_libraries(${PROJECT_NAME} PRIVATE include)
 target_link_libraries(${PROJECT_NAME} PRIVATE src)
-#target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+
+# Link raylib library
+target_link_libraries(src PRIVATE raylib)
