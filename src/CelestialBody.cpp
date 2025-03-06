@@ -105,13 +105,69 @@ double CelestialBody::linearScale(double value) const
   return scaleTargetMinOrbitRadiusSize + (((value - smallest) / (greatest - smallest)) * (scaleTargetMaxOrbitRadiusSize - scaleTargetMinOrbitRadiusSize));
 }
 
+/**
+  Calculates the approximate distance between two celestial bodies. This is only an average distance, as real orbits are elliptical.
+
+  @param a - The first celestial body.
+  @param b - The second celestial body.
+  @return The distance between the two celestial bodies.
+*/
 double CelestialBody::getDistance(const CelestialBody& compare) const
 {
-  // TODO - Calculate distance from the central point between objects a and b
-  double distance = 0; // km
+  double meanDistanceA = (perihelion + aphelion) / 2;
+  double meanDistanceB = (compare.getPerihelion() + compare.getAphelion()) / 2;
 
-  return distance;
+  return fabs(meanDistanceA - meanDistanceB);
 }
+
+//TODO: Implement this function in its entirety - missing time parameter
+/**
+  Calculates a more accurate distance between two celestial bodies
+  Assumptions: 
+  - Time is fixed in this function
+  - The celestial bodies are in the same plane
+  - Constant angular velocity
+
+  @param a - The first celestial body.
+  @param b - The second celestial body.
+  @return The distance between the two celestial bodies.
+*/
+
+/*
+double CelestialBody::getDistance(const CelestialBody& compare) const
+{
+
+  const double PI = 3.14159265358979323846;
+
+  //semi major axis calculation
+  double meanDistanceA = (perihelion + aphelion) / 2;
+  double meanDistanceB = (compare.getPerihelion() + compare.getAphelion()) / 2;
+
+  //orbital eccentricity calculation
+  double eccentricityA = (aphelion - perihelion) / (aphelion + perihelion);
+  double eccentricityB = (compare.getAphelion() - compare.getPerihelion()) / (compare.getAphelion() + compare.getPerihelion());
+
+  //true anomaly calculation (approximation)
+  //TODO: Implement a more accurate calculation
+  //TODO: Use current program time to calculate the true anomaly - time is currently hardcoded
+  double time = 60; //time in days
+  double thetaA = 2 * PI * time / orbit();
+  double thetaB = 2 * PI * time / compare.getOrbit();
+
+  //Radial distance calculation -- using orbit equation
+  double radialA = (meanDistanceA * (1 - pow(eccentricityA, 2))) / (1 + eccentricityA * cos(thetaA));
+  double radialB = (meanDistanceB * (1 - pow(eccentricityB, 2))) / (1 + eccentricityB * cos(thetaB));
+
+  //x-y coordinates calculation
+  double xA = radialA * cos(thetaA);
+  double yA = radialA * sin(thetaA);
+  double xB = radialB * cos(thetaB);
+  double yB = radialB * sin(thetaB);
+
+  //distance calculation -- using distance formula
+  return sqrt(pow(xA - xB, 2) + pow(yA - yB, 2));
+}
+*/
 
 double CelestialBody::getAttractionForce(const CelestialBody& compare) const
 {
