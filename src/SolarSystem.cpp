@@ -149,14 +149,14 @@ std::vector<CelestialBody> getSolarSystem()
     "Uranus.jpg",
     8.6811 * pow(10, 24),
     6.833 * pow(10, 13),
-    1270,
+    1.270 * pow(10, 3),
     9.01,
-    25362,
+    2.5362 * pow(10, 4),
     6.79,
-    2732.696 * pow(10, 6),
-    3001.39 * pow(10, 6),
-    30685.4,
-    28,
+    2.732696 * pow(10, 9),
+    3.00139 * pow(10, 9),
+    3.06854 * pow(10, 4),
+    2.8 * pow(10, 1),
     true
   );
   SolarSystem.push_back(Uranus);
