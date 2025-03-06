@@ -57,12 +57,12 @@ std::vector<CelestialBody> getSolarSystem()
     "Mercury.jpg",
     0.3301 * pow(10, 24),
     6.083 * pow(10, 10),
-    5429,
+    5.429 * pow(10, 3),
     3.70,
     2439.7,
     47.36,
-    46.000 * pow(10, 6),
-    69.818 * pow(10, 6),
+    4.6000 * pow(10, 7),
+    6.9818 * pow(10, 7),
     87.969,
     0,
     false
@@ -104,7 +104,7 @@ std::vector<CelestialBody> getSolarSystem()
     false
   );
   SolarSystem.push_back(Earth);
-  
+
   CelestialBody Mars
   (
     "Mars",
