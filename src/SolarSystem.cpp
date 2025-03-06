@@ -165,16 +165,16 @@ std::vector<CelestialBody> getSolarSystem()
   (
     "Neptune",
     "Neptune.jpg",
-    102.409 * pow(10, 24),
-    6254 * pow(10, 10),
-    1638,
-    11.27,
-    24622,
+    1.02409 * pow(10, 26),
+    6.254 * pow(10, 13),
+    1.638 * pow(10, 3),
+    1.127 * pow(10, 1),
+    2.4622 * pow(10, 4),
     5.45,
-    4471.050 * pow(10, 6),
-    4558.857 * pow(10, 6),
-    60189.018,
-    16,
+    4.471050 * pow(10, 9),
+    4.558857 * pow(10, 9),
+    6.0189018 * pow(10, 4),
+    1.6 * pow(10, 1),
     true
   );
   SolarSystem.push_back(Neptune);
