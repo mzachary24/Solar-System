@@ -77,6 +77,7 @@ void Window::LoadTextures()
   // TODO: Link assets directory to CMake build directory for shorter paths :)
   background = LoadTexture("../assets/textures/Stars.jpg"); // Load image data into GPU memory (VRAM)
 
+  // Load CelestialBody textures
   for (const auto iter : SolarSystem)
   {
     std::string path = "../assets/textures/";
@@ -89,6 +90,7 @@ void Window::LoadTextures()
 
 void Window::LoadModels()
 {
+  // Load CelestialBody models
   int i = 0;
   for (const auto iter : SolarSystem)
   {
