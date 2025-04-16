@@ -18,8 +18,13 @@ jobs:
         with:
           cmake-version: '3.30.0'
 
+      - name: Install Visual Studio components
+        run: |
+          choco install visualstudio2019community --params "'/Install /Add Microsoft.VisualStudio.Workload.VCTools /IncludeRecommended'"
+          choco install visualstudio2019buildtools --params "'/Install /Add Microsoft.VisualStudio.Workload.VCTools /IncludeRecommended'"
+
       - name: Configure CMake
-        run: cmake -S . -B build -G "Visual Studio 16 2019"
+        run: cmake -S . -B build -G "Visual Studio 16 2019" -A x64
 
       - name: Build
         run: cmake --build build --config Release
