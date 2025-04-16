@@ -30,7 +30,7 @@ jobs:
         run: cmake --build build --config Release
         
       - name: View Build Files
-        run: ls build; ls build/_deps; ls build/x64
+        run: ls build; ls build/_deps/raylib-build; ls build/_deps/raylib-src; ls build/_deps/raylib-tmp; ls build/x64/Release
 
       - name: Include
         run: ls build/include/CMakeFiles; ls build/include/x64
