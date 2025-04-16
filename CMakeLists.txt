@@ -29,6 +29,9 @@ add_custom_target(run
 # Executable
 add_executable(${PROJECT_NAME} "src/main.cpp")
 
+# Static compilation
+#set_property(TARGET ${PROJECT_NAME} PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
 # Dirs
 add_subdirectory(include)
 add_subdirectory(src)
@@ -41,5 +44,3 @@ target_link_libraries(include INTERFACE raylib)
 
 # Include raylib directories
 target_include_directories(${PROJECT_NAME} PUBLIC ${raylib_INCLUDE_DIRS})
-
-set_property(TARGET ${PROJECT_NAME} PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
