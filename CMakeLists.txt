@@ -41,3 +41,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE src)
 # Link raylib library
 target_link_libraries(src PRIVATE raylib)
 target_link_libraries(include INTERFACE raylib)
+
+# Include raylib directories
+target_include_directories(${PROJECT_NAME} PUBLIC ${raylib_INCLUDE_DIRS})
