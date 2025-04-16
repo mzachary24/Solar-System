@@ -46,6 +46,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          files: build/Release/SolarSystem.exe
+          files: build/Release/SolarSystem.exe, build/src/Release/src.lib
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
