@@ -29,6 +29,12 @@ jobs:
       - name: Build
         run: cmake --build build --config Release
 
+      - name: View Build Files
+        run: ls build
+
+      - name: View Release Files
+        run: ls build/Release
+
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
