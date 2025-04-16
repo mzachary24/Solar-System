@@ -18,9 +18,9 @@ jobs:
         with:
           cmake-version: '3.30.0'
 
-      - name: Install Visual Studio components
+      - name: Install Visual Studio Build Tools
         run: |
-          choco install visualstudio2019community --params "'/Install /Add Microsoft.VisualStudio.Workload.VCTools /IncludeRecommended'"
+          # Install the Visual Studio Build Tools
           choco install visualstudio2019buildtools --params "'/Install /Add Microsoft.VisualStudio.Workload.VCTools /IncludeRecommended'"
 
       - name: Configure CMake
@@ -34,6 +34,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          files: build/Release/Solar-System.exe
+          files: build/Release/SolarSystem.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
