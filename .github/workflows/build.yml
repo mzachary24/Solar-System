@@ -30,16 +30,7 @@ jobs:
         run: cmake --build build --config Debug
         
       - name: View Build Files
-        run: ls build; ls build/_deps/raylib-build/CMakeFiles; ls build/_deps/raylib-build/raylib; ls build/_deps/raylib-src/src; ls build/_deps/raylib-tmp; ls build/x64/Release/ALL_BUILD; ls build/x64/Release/ZERO_CHECK
-
-      - name: Include
-        run: ls build/include/CMakeFiles; ls build/include/x64
-
-      - name: Src
-        run: ls build/src/CMakeFiles; ls build/src/Release
-        
-      - name: View Release Files
-        run: ls build/Release
+        run: ls build
 
       - name: View Debug Files
         run: ls build/Debug
