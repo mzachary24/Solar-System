@@ -28,10 +28,16 @@ jobs:
 
       - name: Build
         run: cmake --build build --config Release
-
+        
       - name: View Build Files
         run: ls build
 
+      - name: Include
+        run: ls build/include
+
+      - name: Src
+        run: ls build/src
+        
       - name: View Release Files
         run: ls build/Release
 
