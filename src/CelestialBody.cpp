@@ -10,13 +10,18 @@ namespace Celestial
   {
 
   }
-  
+
   void setBounds(const std::vector<CelestialBody>& SolarSystem)
   {
     setSmallestRadius(SolarSystem);
     setSmallestOrbitRadius(SolarSystem);
     setGreatestRadius(SolarSystem);
     setGreatestOrbitRadius(SolarSystem);
+
+    scaleTargetMinRadiusSize = 1;
+    scaleTargetMaxRadiusSize = 1000;
+    scaleTargetMinOrbitRadiusSize = scaleTargetMinRadiusSize + scaleTargetMaxRadiusSize;
+    scaleTargetMaxOrbitRadiusSize = scaleTargetMaxRadiusSize * log(Celestial::greatestOrbitRadius / Celestial::greatestRadius) * 2;
   }
   
   void setSmallestRadius(const std::vector<CelestialBody>& SolarSystem)
@@ -64,7 +69,7 @@ namespace Celestial
   }
 }
 
-CelestialBody::CelestialBody(const std::string& name, const char* fileName, double mass, double volume, double density, double gravity, double radius, double velocity, double perihelion, double aphelion, double orbit, int satellites, bool ring)
+CelestialBody::CelestialBody(const std::string& name, const char* fileName, double mass, double volume, double density, double gravity, double radius, double velocity, double perihelion, double aphelion, double orbit, double rotation, int satellites, bool ring)
   : name(name),
     fileName(fileName),
     mass(mass),
@@ -77,33 +82,37 @@ CelestialBody::CelestialBody(const std::string& name, const char* fileName, doub
     aphelion(aphelion),
     orbit(orbit),
     orbitRadius((perihelion + aphelion) / 2),
+    rotation(rotation),
     satellites(satellites),
     ring(ring) { }
 
-double CelestialBody::logScale(double value) const
+double CelestialBody::logScale(double value, const std::string& type) const
 {
   if (value == 0)
     return 0;
 
-  double logValue = log(value);
-  double logSmallest = log(Celestial::smallestRadius);
-  double logGreatest = log(Celestial::greatestRadius);
+  const double logValue = log(value);
+  double logSmallest;
+  double logGreatest;
+  double scaleMin;
+  double scaleMax;
 
-  return Celestial::scaleTargetMinRadiusSize + (((logValue - logSmallest) / (logGreatest - logSmallest)) * (Celestial::scaleTargetMaxRadiusSize - Celestial::scaleTargetMinRadiusSize));
-}
+  if (type == "radius")
+  {
+    logSmallest = log(Celestial::smallestRadius);
+    logGreatest = log(Celestial::greatestRadius);
+    scaleMin = Celestial::scaleTargetMinRadiusSize;
+    scaleMax = Celestial::scaleTargetMaxRadiusSize;
+  }
+  else if (type == "orbitRadius")
+  {
+    logSmallest = log(Celestial::smallestOrbitRadius);
+    logGreatest = log(Celestial::greatestOrbitRadius);
+    scaleMin = Celestial::scaleTargetMinOrbitRadiusSize;
+    scaleMax = Celestial::scaleTargetMaxOrbitRadiusSize;
+  }
 
-double CelestialBody::linearScale(double value) const
-{
-  if (value == 0)
-    return 0;
-
-  double scaleTargetMinOrbitRadiusSize = Celestial::scaleTargetMaxRadiusSize + Celestial::scaleTargetMinRadiusSize;
-  double scaleTargetMaxOrbitRadiusSize = scaleTargetMinOrbitRadiusSize * 5;
-
-  double smallest = Celestial::smallestOrbitRadius;
-  double greatest = Celestial::greatestOrbitRadius;
-
-  return scaleTargetMinOrbitRadiusSize + (((value - smallest) / (greatest - smallest)) * (scaleTargetMaxOrbitRadiusSize - scaleTargetMinOrbitRadiusSize));
+  return scaleMin + (((logValue - logSmallest) / (logGreatest - logSmallest)) * (scaleMax - scaleMin));
 }
 
 /**

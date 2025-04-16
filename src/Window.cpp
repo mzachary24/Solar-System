@@ -19,11 +19,11 @@
 
 #include "Window.h"
 
-#include <cmath>
 #include <vector>
 
 #include "raylib.h"
 #include "rlgl.h"
+#include "raymath.h"
 
 #include "CelestialBody.h"
 
@@ -32,17 +32,29 @@ Window::Window(const std::vector<CelestialBody>& SolarSystem)
     focalSize(static_cast<float>(SolarSystem.crbegin()->getOrbitRadius() * focalScale))
 {
   InitWindow(1600, 1000, "Solar System");
-  LoadStars();
+  ToggleBorderlessWindowed();
   InitCamera();
   SetTargetFPS(60);
+  LoadTextures();
+  LoadModels();
 
   for (const auto iter : SolarSystem)
-    rotation.push_back(0);
+  {
+    orbitRotationAngles.push_back(0);
+    axisRotationAngles.push_back(0);
+  }
 }
 
 Window::~Window()
 {
-  UnloadTexture(texture);
+  UnloadTexture(background);
+  
+  for (const auto iter : textures)
+    UnloadTexture(iter);
+
+  for (const auto iter : models)
+    UnloadModel(iter);
+
   CloseWindow();
 }
 
@@ -53,104 +65,109 @@ void Window::InitCamera()
   camera.up = Vector3{ 0.0f, 1.0f, 0.0f }; // Camera up vector (rotation towards target)
   camera.fovy = 45.0f; // Camera field-of-view Y
   camera.projection = CAMERA_PERSPECTIVE; // Camera projection type
+
+  // Override the projection matrix with a custom far clipping plane to ensure far objects are rendered
+  proj = MatrixPerspective(camera.fovy * DEG2RAD,
+    (float)GetScreenWidth() / (float)GetScreenHeight(),
+    nearPlane, farPlane);
 }
 
-void Window::LoadStars()
+void Window::LoadTextures()
 {
   // TODO: Link assets directory to CMake build directory for shorter paths :)
-  image = LoadImage("../assets/textures/Stars.jpg"); // Load image data into CPU memory (RAM)
-  texture = LoadTextureFromImage(image); // Image converted to texture, GPU memory (RAM -> VRAM)
-  UnloadImage(image);  // Unload image data from CPU memory (RAM)
+  background = LoadTexture("../assets/textures/Stars.jpg"); // Load image data into GPU memory (VRAM)
 
-  image = LoadImageFromTexture(texture); // Load image from GPU texture (VRAM -> RAM)
-  UnloadTexture(texture); // Unload texture from GPU memory (VRAM)
-
-  texture = LoadTextureFromImage(image); // Recreate texture from retrieved image data (RAM -> VRAM)
-  UnloadImage(image); // Unload retrieved image data from CPU memory (RAM)
+  for (const auto iter : SolarSystem)
+  {
+    std::string path = "../assets/textures/";
+    std::string name = iter.getFileName();
+    path += name;
+    Texture2D texture = LoadTexture(path.c_str());
+    textures.push_back(texture);
+  }
 }
 
-void Window::DrawSphereBasic(Color color)
+void Window::LoadModels()
 {
-  int rings = 16;
-  int slices = 16;
-
-  // Make sure there is enough space in the internal render batch
-  // buffer to store all required vertex, batch is reseted if required
-  rlCheckRenderBatchLimit((rings + 2)*slices*6);
-
-  rlBegin(RL_TRIANGLES);
-      rlColor4ub(color.r, color.g, color.b, color.a);
-
-      for (int i = 0; i < (rings + 2); i++)
-      {
-          for (int j = 0; j < slices; j++)
-          {
-              rlVertex3f(cosf(DEG2RAD*(270+(180/(rings + 1))*i))*sinf(DEG2RAD*(j*360/slices)),
-                         sinf(DEG2RAD*(270+(180/(rings + 1))*i)),
-                         cosf(DEG2RAD*(270+(180/(rings + 1))*i))*cosf(DEG2RAD*(j*360/slices)));
-              rlVertex3f(cosf(DEG2RAD*(270+(180/(rings + 1))*(i+1)))*sinf(DEG2RAD*((j+1)*360/slices)),
-                         sinf(DEG2RAD*(270+(180/(rings + 1))*(i+1))),
-                         cosf(DEG2RAD*(270+(180/(rings + 1))*(i+1)))*cosf(DEG2RAD*((j+1)*360/slices)));
-              rlVertex3f(cosf(DEG2RAD*(270+(180/(rings + 1))*(i+1)))*sinf(DEG2RAD*(j*360/slices)),
-                         sinf(DEG2RAD*(270+(180/(rings + 1))*(i+1))),
-                         cosf(DEG2RAD*(270+(180/(rings + 1))*(i+1)))*cosf(DEG2RAD*(j*360/slices)));
-
-              rlVertex3f(cosf(DEG2RAD*(270+(180/(rings + 1))*i))*sinf(DEG2RAD*(j*360/slices)),
-                         sinf(DEG2RAD*(270+(180/(rings + 1))*i)),
-                         cosf(DEG2RAD*(270+(180/(rings + 1))*i))*cosf(DEG2RAD*(j*360/slices)));
-              rlVertex3f(cosf(DEG2RAD*(270+(180/(rings + 1))*(i)))*sinf(DEG2RAD*((j+1)*360/slices)),
-                         sinf(DEG2RAD*(270+(180/(rings + 1))*(i))),
-                         cosf(DEG2RAD*(270+(180/(rings + 1))*(i)))*cosf(DEG2RAD*((j+1)*360/slices)));
-              rlVertex3f(cosf(DEG2RAD*(270+(180/(rings + 1))*(i+1)))*sinf(DEG2RAD*((j+1)*360/slices)),
-                         sinf(DEG2RAD*(270+(180/(rings + 1))*(i+1))),
-                         cosf(DEG2RAD*(270+(180/(rings + 1))*(i+1)))*cosf(DEG2RAD*((j+1)*360/slices)));
-          }
-      }
-  rlEnd();
+  int i = 0;
+  for (const auto iter : SolarSystem)
+  {
+    Mesh mesh = GenMeshSphere(1.0f, 32, 32);
+    Model model = LoadModelFromMesh(mesh);
+    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures[i++];
+    models.push_back(model);
+  }
 }
 
-void Window::Update()
+void Window::DrawBackground()
 {
-  UpdateCamera(&camera, CAMERA_ORBITAL);
-  
-  // TODO: Create parallel vector of rotation data and calculate rotation
+  DrawTexture(background, 0, 0, WHITE);
+}
 
-  BeginDrawing();
+void Window::DrawCelestialBodies()
+{
+  int i = 0;
+  for (const auto iter : SolarSystem)
+  {
+    const float scaledOrbitRadius = static_cast<float>(iter.getOrbitRadius());
+    const float scaledRadius = static_cast<float>(iter.getRadius());
 
-    ClearBackground(BLACK);
-
-    DrawTexture(texture, 0, 0, WHITE);
-
-    BeginMode3D(camera);
-
-      int i = 0;
-      for (const auto iter : SolarSystem)
-      {
-        const float scaledOrbitRadius = static_cast<float>(iter.getOrbitRadius());
-        const float scaledRadius = static_cast<float>(iter.getRadius());
-
-        rlPushMatrix();
-
-          rlRotatef(0.0f, 0.0f, 1.0f, 0.0f); // Rotation of CelestialBody orbit
-          rlTranslatef(scaledOrbitRadius, 0.0f, 0.0f); // Translation of CelestialBody orbit
-
-          rlPushMatrix();
-            // TODO: Create parallel vector of rotation data and calculate rotation
-            rlRotatef(rotation[i], 0.25f, 1.0f, 0.0f); // Rotation of CelestialBody
-            rlScalef(scaledRadius, scaledRadius, scaledRadius); // Scale CelestialBody
-            DrawSphereBasic(GOLD); // Color CelestialBody
-          rlPopMatrix();
-
-        rlPopMatrix();
-        ++i;
-      }
-
-    EndMode3D();
-
-  EndDrawing();
+    rlPushMatrix();
+      rlRotatef(orbitRotationAngles[i], 0.0f, 1.0f, 0.0f); // Rotation of CelestialBody orbit around the Sun
+      rlTranslatef(scaledOrbitRadius, 0.0f, 0.0f); // Translation of CelestialBody orbit
+      rlPushMatrix();
+        rlRotatef(axisRotationAngles[i], 0.25f, 1.0f, 0.0f); // Rotation of CelestialBody itself
+        rlScalef(scaledRadius, scaledRadius, scaledRadius); // Scale CelestialBody
+        DrawModel(models[i], (Vector3){ 0.0f, 0.0f, 0.0f }, 1.0f, WHITE); // Draw the CelestialBody
+      rlPopMatrix();
+    rlPopMatrix();
+    ++i;
+  }
 }
 
 bool Window::Open()
 {
   return !WindowShouldClose();
+}
+
+void Window::Update(float& elapsedTime)
+{
+  elapsedTime += GetFrameTime();
+
+  UpdateCamera(&camera, CAMERA_ORBITAL);
+
+  /*
+  // Update rotation vectors
+  int i = 0;
+  const double secondsInDay = 86400;
+  const double daysElapsed = (elapsedTime * timeScale) / secondsInDay;
+  for (const auto iter : SolarSystem)
+  {
+    const double daysPerOneOrbitDegree = iter.getOrbit() / 360.0f;
+    orbitRotationAngles[i] = daysElapsed / daysPerOneOrbitDegree;
+
+    const double daysPerOneAxisDegree = iter.getAxisRotation() / 360.0f;
+    axisRotationAngles[i] = daysElapsed / daysPerOneAxisDegree;
+
+    ++i;
+  }
+  */
+
+  // Update rotation vectors
+  int i = 0;
+  for (const auto iter : SolarSystem)
+  {
+    orbitRotationAngles[i] = (iter.getOrbit() / 360.0f) * timeScale;
+    axisRotationAngles[i] = (iter.getAxisRotation() / 360.0f) * timeScale;
+    ++i;
+  }
+
+  BeginDrawing();
+    ClearBackground(BLACK);
+    DrawBackground();
+    BeginMode3D(camera);
+      rlSetMatrixProjection(proj); // Override the projection matrix with a custom far plane
+      DrawCelestialBodies();
+    EndMode3D();
+  EndDrawing();
 }
