@@ -33,10 +33,10 @@ jobs:
         run: ls build
 
       - name: Include
-        run: ls build/include
+        run: ls build/include/CMakeFiles; ls build/include/x64
 
       - name: Src
-        run: ls build/src
+        run: ls build/src/CMakeFiles; ls build/src/Release
         
       - name: View Release Files
         run: ls build/Release
