@@ -27,7 +27,7 @@ jobs:
         run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
 
       - name: Build
-        run: cmake --build build --config Release
+        run: cmake --build build --config Debug
         
       - name: View Build Files
         run: ls build; ls build/_deps/raylib-build/CMakeFiles; ls build/_deps/raylib-build/raylib; ls build/_deps/raylib-src/src; ls build/_deps/raylib-tmp; ls build/x64/Release/ALL_BUILD; ls build/x64/Release/ZERO_CHECK
@@ -40,6 +40,9 @@ jobs:
         
       - name: View Release Files
         run: ls build/Release
+
+      - name: View Debug Files
+        run: ls build/Debug
 
       - name: Create Release
         id: create_release
