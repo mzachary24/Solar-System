@@ -28,12 +28,6 @@ jobs:
 
       - name: Build
         run: cmake --build build --config Debug
-        
-      - name: View Build Files
-        run: ls build
-
-      - name: View Debug Files
-        run: ls build/Debug
 
       - name: Create Release
         id: create_release
