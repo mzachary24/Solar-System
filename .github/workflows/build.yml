@@ -30,7 +30,7 @@ jobs:
         run: cmake --build build --config Release
         
       - name: View Build Files
-        run: ls build
+        run: ls build; ls build/_deps; ls build/x64
 
       - name: Include
         run: ls build/include/CMakeFiles; ls build/include/x64
