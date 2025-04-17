@@ -69,7 +69,7 @@ std::vector<CelestialBody> getSolarSystem()
     0,
     false
   );
-  SolarSystem.push_back(MZ);
+  SolarSystem.push_back(MikeZach);
 
   CelestialBody Mercury
   (
